@@ -1,0 +1,84 @@
+body{
+	background-color: #f0f0f0;
+	color: #003884!important;
+	font-family: calibri;
+	font-weight: bold;
+	font-family: 'Roboto Slab', serif;
+}
+
+/*NAV BAR*/
+nav{
+	white-space: nowrap;
+	text-transform: uppercase;
+	background: #000!important;
+}
+nav.border-bottom{
+	border-width: 2px!important;
+}
+.border-bottom{
+	border-width: 1px!important;
+	border-color: #003884!important;
+}
+
+/*TITLES*/
+h1.title{
+	font-weight: bold!important;
+	text-transform: uppercase;
+	font-size: 2rem!important;
+	text-align: center;
+}
+
+
+
+/*WRAPPERS*/
+.wrapper{
+	background: white;
+	border:1px solid #d9d9d9;"
+}
+
+
+
+
+/*EFFECTS*/
+
+	/*ZOOM*/
+.zoom{
+	overflow: hidden;
+}
+.zoom-custom{
+	transition: transform .2s;
+}
+.zoom-custom:hover {
+  -ms-transform: scale(1.1); /* IE 9 */
+  -webkit-transform: scale(1.1); /* Safari 3-8 */
+  transform: scale(1.1); 
+  overflow: hidden;
+}
+.border-radius{
+	border-radius: 2%!important;
+}
+	/*Brighten*/
+.trending-font{
+	font-size: .8rem;
+}
+a.brighten {
+    display: inline-block;
+    background: white;
+    padding: 0;
+}
+
+a.brighten img {
+    display: block;
+
+    -webkit-transition: all 0.5s linear;
+       -moz-transition: all 0.5s linear;
+        -ms-transition: all 0.5s linear;
+         -o-transition: all 0.5s linear;
+            transition: all 0.5s linear;
+}
+
+a.brighten:hover img {
+	opacity: 1.5;
+    filter: brightness(150%);
+
+}

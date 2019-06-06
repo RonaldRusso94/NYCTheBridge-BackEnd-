@@ -1,0 +1,35 @@
+{
+  "name": "nycthebridge",
+  "version": "1.0.0",
+  "description": "The #1 source for upcoming New York Rap & Hip Hop artists.",
+  "main": "app.js",
+  "scripts": {
+    "server": "nodemon app.js",
+    "start": "node app.js"
+  },
+  "keywords": [
+    "NYCTheBridge",
+    "TheBridgeNyc",
+    "TheBridge",
+    "Bridge",
+    "HipHop",
+    "Rap",
+    "Brooklyn",
+    "Bronx",
+    "Queens",
+    "Manhattan",
+    "Music",
+    "Download"
+  ],
+  "author": "Ronald Russo",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "ejs": "^2.6.1",
+    "express": "^4.16.4",
+    "mongoose": "^5.5.3"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.11"
+  }
+}

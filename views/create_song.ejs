@@ -1,0 +1,72 @@
+<% include partials/header %>
+
+<% var abc = artists %>
+
+<script
+  src="https://code.jquery.com/jquery-3.4.0.min.js"
+  integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg="
+  crossorigin="anonymous"></script>
+
+<h1 class="text-center">Create a new song</h1>
+
+<form class="text-center" action="/song" method="POST">
+  <div class="form-group myDiv">
+    <input type="text" name="name" placeholder="name">
+
+    <select name="artist">
+    	<% artists.reverse().forEach(function(artist){ %>
+        	<option value="<%= artist._id %>"><%= artist.name%></option>
+        <% }); %>	
+    </select>
+    <button type="button" onclick="tagArtist()">Tag Artist</button>
+
+  </div>
+  <button>Submit</button>
+</form>
+
+<script type="text/javascript">
+
+  var getArtist =  <%-JSON.stringify(abc)%>;
+  console.log(getArtist);
+
+  function tagArtist() {
+    var selectList = document.createElement('select');
+
+
+    getArtist.forEach(function(artist) {
+        var option = document.createElement('option');
+        option.text = artist.name;
+        option.value = artist._id;
+        console.log(option.value)
+    
+        selectList.appendChild(option);
+    });
+
+    document.body.appendChild(selectList);
+  }
+
+
+</script>
+
+<!-- <script type="text/javascript">
+  
+
+  function tagArtist() {
+    var selectList = document.createElement('select');
+
+
+    artists.forEach(function(artist) {
+        var option = document.createElement('option');
+        option.text = artist.name;
+    
+        selectList.appendChild(option);
+    });
+
+    document.body.appendChild(selectList);
+  }
+  
+</script> -->
+
+
+
+<% include partials/footer %>

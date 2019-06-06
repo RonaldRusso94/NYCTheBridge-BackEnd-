@@ -1,0 +1,59 @@
+<% include partials/header %>
+
+
+<a href="/new">add Artist</a>
+
+
+
+	<section class="container pb-4 wrapper">
+		<h1 class="my-1 text-center title"><%= artist.name %> - <%= artist.title %></h1>
+		<hr class="border-bottom mt-0">
+
+		<div class="row">
+			<div class="col-12">
+
+				<div class="embed-responsive embed-responsive-16by9">
+					<%- artist.content %>
+				</div>
+			</div>
+		</div>
+
+		<div class="row mb-lg-0 mb-md-4 mt-4">
+			<div class="col-12 col-md-8 ">
+				<p class=""><%= artist.description %></p>
+				<p><%= artist.scName %></p>
+			</div>
+
+			<div class="col-12 col-md-4">
+
+
+				<% if (artist.scName) { %>
+				    <a class="nav-link" href="<%= artist.soundcloud %>"><i class="fab fa-soundcloud"></i> <%= artist.scName %></a>
+				<% } %>
+
+				<% if (artist.igName) { %>
+				    <a class="nav-link" href="<%= artist.instagram %>"><i class="fab fa-instagram"></i> <%= artist.igName %></a>
+				<% } %>
+
+				<% if (artist.twName) { %>
+				    <a class="nav-link" href="<%= artist.twitter %>"><i class="fab fa-twitter"></i> <%= artist.twName %></a>
+				<% } %>
+
+
+			</div>
+		</div>
+
+	</section>
+
+
+
+
+
+	
+	
+	
+
+			
+
+
+<% include partials/footer %>
