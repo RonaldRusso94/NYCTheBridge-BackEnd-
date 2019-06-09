@@ -94,6 +94,10 @@ app.post("/song", (req, res) => {
   
   const song = {
     name: name,
+    image: image,
+    content: content,
+    description: description,
+    category: category,
     artist: artist
   };
 
