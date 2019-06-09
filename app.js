@@ -83,21 +83,13 @@ app.post("/artist", (req, res) => {
 app.post("/song", (req, res) => {
   const {
     name,
-    artist,
-    image,
-    content,
-    description,
-    category
+    artist
     } = req.body;
 
   console.log("REQ: ", req.body);
   
   const song = {
     name: name,
-    image: image,
-    content: content,
-    description: description,
-    category: category,
     artist: artist
   };
 
