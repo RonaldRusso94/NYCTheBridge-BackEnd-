@@ -9,11 +9,15 @@
 
 <h1 class="text-center">Create a new song</h1>
 
-<form class="text-center" action="/song" method="POST">
+<form class="text-center" action="/song" method="POST" id="songForm">
   <div class="form-group myDiv">
     <input type="text" name="name" placeholder="name">
+    <input type="text" name="image" placeholder="Image URL">
+    <input type="text" name="content" placeholder="Embed">
+    <input type="text" name="description" placeholder="description">
+    <input type="text" name="category" placeholder="category">
 
-    <select name="artist">
+    <select name="artist[]" class="selectMenu">
     	<% artists.reverse().forEach(function(artist){ %>
         	<option value="<%= artist._id %>"><%= artist.name%></option>
         <% }); %>	
@@ -21,29 +25,52 @@
     <button type="button" onclick="tagArtist()">Tag Artist</button>
 
   </div>
-  <button>Submit</button>
+  <button onclick="test()">Submit</button>
+  <a onclick="test()" href="#">TESTING</a>
 </form>
 
 <script type="text/javascript">
 
   var getArtist =  <%-JSON.stringify(abc)%>;
+
   console.log(getArtist);
 
   function tagArtist() {
     var selectList = document.createElement('select');
+    selectList.className = "selectMenu"
+    selectList.name = "artist"
 
 
     getArtist.forEach(function(artist) {
         var option = document.createElement('option');
         option.text = artist.name;
         option.value = artist._id;
-        console.log(option.value)
+        // console.log(option.value)
+        // console.log(option.text)
     
         selectList.appendChild(option);
     });
 
     document.body.appendChild(selectList);
+    document.getElementById('songForm').appendChild(selectList);
   }
+
+  function test(){
+    var strArtist = ""
+    var arrArtist = []
+    for(i = 0; i < document.getElementsByClassName("selectMenu").length; i++){
+      var e = document.getElementsByClassName("selectMenu")[i];
+      strArtist = e.options[e.selectedIndex].text;
+      arrArtist.push(strArtist)
+
+    }
+    console.log(arrArtist);    
+    // var e = document.getElementsByClassName("selectMenu")[1];
+    // var strArtist = strArtist + e.options[e.selectedIndex].text;
+    // console.log(strArtist);
+  }
+
+  
 
 
 </script>

@@ -83,8 +83,12 @@ app.post("/artist", (req, res) => {
 app.post("/song", (req, res) => {
   const {
     name,
-    artist
-  } = req.body;
+    artist,
+    image,
+    content,
+    description,
+    category
+    } = req.body;
 
   console.log("REQ: ", req.body);
   
