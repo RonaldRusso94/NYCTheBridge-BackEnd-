@@ -1,35 +1,40 @@
 {
   "name": "nycthebridge",
   "version": "1.0.0",
-  "description": "The #1 source for upcoming New York Rap & Hip Hop artists.",
-  "main": "app.js",
+  "description": "The #1 source for upcoming New York Rap & Hip Hop artists. Message us on Instagram @thebridgenyc1 to display your work.",
+  "main": "server.js",
   "scripts": {
-    "server": "nodemon app.js",
-    "start": "node app.js"
+    "start": "node server",
+    "server": "nodemon server"
   },
   "keywords": [
-    "NYCTheBridge",
-    "TheBridgeNyc",
-    "TheBridge",
-    "Bridge",
-    "HipHop",
-    "Rap",
-    "Brooklyn",
-    "Bronx",
-    "Queens",
-    "Manhattan",
     "Music",
-    "Download"
+    "NY",
+    "NYC",
+    "RAP",
+    "Blog",
+    "Videos",
+    "Songs",
+    "Mixtape",
+    "Album",
+    "Rap",
+    "Hiphop",
+    "TheBridge",
+    "BridgeNYC",
+    "NYCTheBridge"
   ],
   "author": "Ronald Russo",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.18.3",
-    "ejs": "^2.6.1",
-    "express": "^4.16.4",
-    "mongoose": "^5.5.3"
+    "bcryptjs": "^2.4.3",
+    "config": "^3.2.6",
+    "express": "^4.17.1",
+    "express-validator": "^6.4.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.2"
   },
   "devDependencies": {
-    "nodemon": "^1.18.11"
+    "concurrently": "^5.1.0",
+    "nodemon": "^2.0.2"
   }
 }
