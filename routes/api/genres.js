@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const Single = require("../../models/Single");
+const Genre = require("../../models/Genre");
 
 // @route   GET api/singles/:singleId
 // @desc    Get a specific single
@@ -20,18 +20,16 @@ router.get("/:singleId", async (req, res) => {
   }
 });
 
-// @route   POST api/singles/
-// @desc    Creates a new single
+// @route   POST api/genres/
+// @desc    Creates a new genre
 // @access  Private
 router.post("/", (req, res) => {
-  const { artist, title, songs } = req.body;
+  const { name } = req.body;
   try {
-    const single = new Single({
-      artist,
-      title,
-      songs
+    const genre = new Genre({
+      name
     });
-    single.save().then(s => res.json(s));
+    genre.save().then(g => res.json(g));
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");

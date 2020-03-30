@@ -4,6 +4,7 @@ const router = express.Router();
 const Artist = require('../../models/Artist');
 const Single = require('../../models/Single')
 const Album = require('../../models/Album')
+const Genre = require('../../models/Genre')
 
 // @route   GET api/browse/artist
 // @desc    Get all artist
@@ -44,14 +45,16 @@ router.get('/albums', async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
-// @route   GET api/browse/albums
-// @desc    Get all albums
+// @route   GET api/browse/genres
+// @desc    Get all genres
 // @access  Public
 router.get('/genres', async (req, res) => {
   try {
     // const albums = await Album.find();
-    const albums = await Album.find();
-    res.json(albums);
+    await Genre.find().sort('name').exec((error, items) => {
+      if (error) return res.json({ error })
+      else return res.json(items)
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
