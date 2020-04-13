@@ -13,7 +13,8 @@ app.get('/', (req, res) => res.send('API Running'));
 
 // Define Routes
 app.use('/api/admin', require('./routes/api/admin'));
-app.use('/api/browse', require('./routes/api/browse'));
+app.use('/api/artists', require('./routes/api/artists'));
+app.use('/api/albums', require('./routes/api/albums'));
 app.use('/api/songs', require('./routes/api/songs'));
 app.use('/api/singles', require('./routes/api/singles'));
 app.use('/api/genres', require('./routes/api/genres'));

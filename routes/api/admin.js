@@ -17,7 +17,7 @@ router.post(
   '/',
   [
     check('email', 'Please include a valid email').isEmail(),
-    check('password', 'Password is required').exists()
+    check('password', 'Password is required').exists(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -47,8 +47,8 @@ router.post(
 
       const payload = {
         admin: {
-          id: admin.id
-        }
+          id: admin.id,
+        },
       };
       // Return jsonwebtoken
       jwt.sign(
@@ -73,14 +73,12 @@ router.post(
 router.post(
   '/register',
   [
-    check('name', 'Name is required')
-      .not()
-      .isEmpty(),
+    check('name', 'Name is required').not().isEmpty(),
     check('email', 'Please include a valid email').isEmail(),
     check(
       'password',
       'Please enter a password with 6 or more characters'
-    ).isLength({ min: 6 })
+    ).isLength({ min: 6 }),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -103,7 +101,7 @@ router.post(
       admin = new Admin({
         name,
         email,
-        password
+        password,
       });
 
       //Encrypt password
@@ -115,8 +113,8 @@ router.post(
 
       const payload = {
         admin: {
-          id: admin.id
-        }
+          id: admin.id,
+        },
       };
       // Return jsonwebtoken
       jwt.sign(
@@ -156,13 +154,9 @@ router.post(
   [
     auth,
     [
-      check('name', 'Artist name is required')
-        .not()
-        .isEmpty(),
-      check('bio', 'Artist bio is required')
-        .not()
-        .isEmpty()
-    ]
+      check('name', 'Artist name is required').not().isEmpty(),
+      check('bio', 'Artist bio is required').not().isEmpty(),
+    ],
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -179,7 +173,7 @@ router.post(
       twitter,
       facebook,
       instagram,
-      soundcloud
+      soundcloud,
     } = req.body;
 
     const artistFields = {};
@@ -216,14 +210,7 @@ router.post(
 // @access  Private
 router.post(
   '/artist/:id/album',
-  [
-    auth,
-    [
-      check('title', 'Album title is required')
-        .not()
-        .isEmpty()
-    ]
-  ],
+  [auth, [check('title', 'Album title is required').not().isEmpty()]],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -235,13 +222,14 @@ router.post(
     const { title, songs } = req.body;
 
     const albumFields = {};
+    albumFields.artist = artist;
     albumFields.title = title;
     albumFields.artist = artist;
 
     // Build song array
     albumFields.songs = [];
     if (songs) {
-      songs.forEach(song =>
+      songs.forEach((song) =>
         albumFields.songs.push({ songtitle: song.songtitle })
       );
     }
