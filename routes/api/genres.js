@@ -30,21 +30,4 @@ router.get('/:genreId', async (req, res) => {
   }
 });
 
-// NEEDS TO BE IN ADMIN ALSO NEEDS AUTH
-// @route   POST api/genres/
-// @desc    Creates a new genre
-// @access  Private
-router.post('/', (req, res) => {
-  const { name } = req.body;
-  try {
-    const genre = new Genre({
-      name,
-    });
-    genre.save().then((g) => res.json(g));
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-});
-
 module.exports = router;

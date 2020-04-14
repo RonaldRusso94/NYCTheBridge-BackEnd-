@@ -248,4 +248,77 @@ router.post(
   }
 );
 
+// @route   POST api/admin/genres
+// @desc    Create genre
+// @access  Private
+router.post(
+  '/genre',
+  [
+    auth,
+    [
+      check('name', 'Genre name is required').not().isEmpty(),
+      check('img', 'Image is required').not().isEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { name, img } = req.body;
+
+    const genreFields = {};
+
+    genreFields.name = name;
+    genreFields.img = img;
+
+    try {
+      // Create
+      let genre = new Genre(genreFields);
+
+      await genre.save();
+
+      res.json(genre);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
+// @route   POST api/admin/single
+// @desc    Create single
+// @access  Private
+router.post(
+  '/artist/:id/single',
+  [auth, [check('title', 'Single title is required').not().isEmpty()]],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const artist = await Artist.findById(req.params.id).select('id');
+
+    const { title } = req.body;
+
+    const singleFields = {};
+    singleFields.artist = artist;
+    singleFields.title = title;
+
+    try {
+      // Create
+      let single = new Single(singleFields);
+
+      await single.save();
+
+      res.json(single);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
 module.exports = router;
