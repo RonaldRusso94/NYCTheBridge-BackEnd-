@@ -9,6 +9,7 @@ const { check, validationResult } = require('express-validator');
 const Admin = require('../../models/Admin');
 const Artist = require('../../models/Artist');
 const Album = require('../../models/Album');
+const Single = require('../../models/Single');
 
 // @route   POST api/admin
 // @desc    Authenticate admin & get token
@@ -205,11 +206,77 @@ router.post(
   }
 );
 
-// @route   POST api/admin/album
+// @route   PUT api/admin/artist/:id
+// @desc    Update artist
+// @access  private
+router.put(
+  '/artist/:id',
+  [
+    auth,
+    [
+      check('name', 'Artist name is required').not().isEmpty(),
+      check('bio', 'Artist bio is required').not().isEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const {
+      name,
+      bio,
+      website,
+      company,
+      youtube,
+      twitter,
+      facebook,
+      instagram,
+      soundcloud,
+    } = req.body;
+
+    const artistFields = {};
+
+    artistFields.name = name;
+    artistFields.bio = bio;
+    if (website) artistFields.website = website;
+    if (company) artistFields.company = company;
+
+    // Build social object
+    artistFields.social = {};
+    if (youtube) artistFields.social.youtube = youtube;
+    if (twitter) artistFields.social.twitter = twitter;
+    if (facebook) artistFields.social.facebook = facebook;
+    if (instagram) artistFields.social.instagram = instagram;
+    if (soundcloud) artistFields.social.soundcloud = soundcloud;
+
+    let artist = await Artist.findOne({ _id: req.params.id });
+
+    try {
+      if (artist) {
+        // Update
+        artist = await Artist.findOneAndUpdate(
+          { _id: req.params.id },
+          { $set: artistFields },
+          { new: true }
+        );
+        return res.json(artist);
+      } else {
+        res.status(404).send('Artist not found');
+      }
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
+// @route   POST api/admin/artist/:artistId/album
 // @desc    Create album
 // @access  Private
 router.post(
-  '/artist/:id/album',
+  '/artist/:artistId/album',
   [auth, [check('title', 'Album title is required').not().isEmpty()]],
   async (req, res) => {
     const errors = validationResult(req);
@@ -217,14 +284,13 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const artist = await Artist.findById(req.params.id).select('id');
+    const artist = await Artist.findById(req.params.artistId).select('id');
 
     const { title, songs } = req.body;
 
     const albumFields = {};
     albumFields.artist = artist;
     albumFields.title = title;
-    albumFields.artist = artist;
 
     // Build song array
     albumFields.songs = [];
@@ -241,6 +307,53 @@ router.post(
       await album.save();
 
       res.json(album);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
+// @route   PUT api/admin/artist/:artistId/album/:albumId
+// @desc    Update album
+// @access  Private
+router.put(
+  '/artist/:artistId/album/:albumId',
+  [auth, [check('title', 'Album title is required').not().isEmpty()]],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    // Get album by ID
+    let album = await Album.findById(req.params.albumId);
+
+    const { title, songs } = req.body;
+
+    const albumFields = {};
+    albumFields.title = title;
+
+    // Build song array
+    albumFields.songs = [];
+    if (songs) {
+      songs.forEach((song) =>
+        albumFields.songs.push({ songtitle: song.songtitle })
+      );
+    }
+
+    try {
+      // Update
+      if (req.params.artistId === album.artist.toString()) {
+        album = await Album.findOneAndUpdate(
+          { _id: req.params.albumId },
+          { $set: albumFields },
+          { new: true }
+        );
+        res.json(album);
+      } else {
+        res.status(500).send('Server Error');
+      }
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server Error');
@@ -266,6 +379,9 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
+    // Get single by ID
+    let album = await Album.findById(req.params.albumId);
+
     const { name, img } = req.body;
 
     const genreFields = {};
@@ -287,11 +403,11 @@ router.post(
   }
 );
 
-// @route   POST api/admin/single
+// @route   POST api/admin/artist/:artistId/single
 // @desc    Create single
 // @access  Private
 router.post(
-  '/artist/:id/single',
+  '/artist/:artistId/single',
   [auth, [check('title', 'Single title is required').not().isEmpty()]],
   async (req, res) => {
     const errors = validationResult(req);
@@ -299,7 +415,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const artist = await Artist.findById(req.params.id).select('id');
+    const artist = await Artist.findById(req.params.artistId).select('id');
 
     const { title } = req.body;
 
@@ -314,6 +430,45 @@ router.post(
       await single.save();
 
       res.json(single);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
+// @route   PUT api/admin/artist/:artistId/single/:singleId
+// @desc    Update single
+// @access  Private
+router.put(
+  '/artist/:artistId/single/:singleId',
+  [auth, [check('title', 'Single title is required').not().isEmpty()]],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { title } = req.body;
+
+    const singleFields = {};
+    singleFields.title = title;
+
+    // Get album by ID
+    let single = await Single.findById(req.params.singleId);
+
+    try {
+      // Update
+      if (req.params.artistId === single.artist.toString()) {
+        single = await Single.findOneAndUpdate(
+          { _id: req.params.singleId },
+          { $set: singleFields },
+          { new: true }
+        );
+        res.json(single);
+      } else {
+        res.status(500).send('Server Error');
+      }
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server Error');
