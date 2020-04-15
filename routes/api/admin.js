@@ -149,7 +149,7 @@ router.get('/auth', auth, async (req, res) => {
 
 // @route   POST api/admin/artist
 // @desc    Create artist
-// @access  private
+// @access  Private
 router.post(
   '/artist',
   [
@@ -208,7 +208,7 @@ router.post(
 
 // @route   PUT api/admin/artist/:id
 // @desc    Update artist
-// @access  private
+// @access  Private
 router.put(
   '/artist/:id',
   [
@@ -271,6 +271,29 @@ router.put(
     }
   }
 );
+
+// @route   DELETE api/admin/artist/:id
+// @desc    Delete artist, albums, and singles
+// @access  Private
+router.delete('/artist/:id', auth, async (req, res) => {
+  try {
+    // Remove Singles
+    // await Single.findOneAndRemove({ artist: req.params.id });
+    await Single.deleteMany({ artist: req.params.id });
+
+    // Remove Albums
+    // await Album.findOneAndRemove({ artist: req.params.id });
+    await Album.deleteMany({ artist: req.params.id });
+
+    // Remove Artist
+    await Artist.findOneAndRemove({ _id: req.params.id });
+
+    res.json({ msg: 'DELETED' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 // @route   POST api/admin/artist/:artistId/album
 // @desc    Create album
@@ -352,7 +375,7 @@ router.put(
         );
         res.json(album);
       } else {
-        res.status(500).send('Server Error');
+        res.status(500).send('Album was not created by artist');
       }
     } catch (err) {
       console.error(err.message);
@@ -467,7 +490,7 @@ router.put(
         );
         res.json(single);
       } else {
-        res.status(500).send('Server Error');
+        res.status(404).send('Single was not created by artist');
       }
     } catch (err) {
       console.error(err.message);
