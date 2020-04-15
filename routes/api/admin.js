@@ -288,7 +288,7 @@ router.delete('/artist/:id', auth, async (req, res) => {
     // Remove Artist
     await Artist.findOneAndRemove({ _id: req.params.id });
 
-    res.json({ msg: 'DELETED' });
+    res.json({ msg: 'Artist deleted' });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
@@ -307,7 +307,12 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
+    // Check if artist exist
     const artist = await Artist.findById(req.params.artistId).select('id');
+
+    if (artist === null) {
+      return res.status(404).send('Artist not found');
+    }
 
     const { title, songs } = req.body;
 
@@ -384,6 +389,33 @@ router.put(
   }
 );
 
+// @route   DELETE api/admin/artist/:artistId/album/:albumId
+// @desc    Delete album
+// @access  Private
+router.delete('/artist/:artistId/album/:albumId', auth, async (req, res) => {
+  // Get album by ID
+  let album = await Album.findById(req.params.albumId);
+
+  const artist = await Artist.findById(req.params.artistId).select('id');
+
+  // Check if artist & album exist
+  if (artist === null) {
+    return res.status(404).send('Artist not found');
+  }
+  if (album === null) {
+    return res.status(404).send('Album not found');
+  }
+
+  try {
+    // Delete
+    await Album.findOneAndRemove({ _id: req.params.albumId });
+    res.json({ msg: 'Artist deleted' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error!!');
+  }
+});
+
 // @route   POST api/admin/genres
 // @desc    Create genre
 // @access  Private
@@ -401,9 +433,6 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-
-    // Get single by ID
-    let album = await Album.findById(req.params.albumId);
 
     const { name, img } = req.body;
 
@@ -438,7 +467,12 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
+    // Check if artist exist
     const artist = await Artist.findById(req.params.artistId).select('id');
+
+    if (artist === null) {
+      return res.status(404).send('Artist not found');
+    }
 
     const { title } = req.body;
 
