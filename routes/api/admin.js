@@ -278,11 +278,9 @@ router.put(
 router.delete('/artist/:id', auth, async (req, res) => {
   try {
     // Remove Singles
-    // await Single.findOneAndRemove({ artist: req.params.id });
     await Single.deleteMany({ artist: req.params.id });
 
     // Remove Albums
-    // await Album.findOneAndRemove({ artist: req.params.id });
     await Album.deleteMany({ artist: req.params.id });
 
     // Remove Artist
@@ -396,20 +394,14 @@ router.delete('/artist/:artistId/album/:albumId', auth, async (req, res) => {
   // Get album by ID
   let album = await Album.findById(req.params.albumId);
 
-  const artist = await Artist.findById(req.params.artistId).select('id');
-
-  // Check if artist & album exist
-  if (artist === null) {
-    return res.status(404).send('Artist not found');
-  }
-  if (album === null) {
-    return res.status(404).send('Album not found');
-  }
-
   try {
-    // Delete
-    await Album.findOneAndRemove({ _id: req.params.albumId });
-    res.json({ msg: 'Artist deleted' });
+    // Delete with checks
+    if (req.params.artistId === album.artist.toString()) {
+      await Album.findOneAndRemove({ _id: req.params.albumId });
+      res.json({ msg: 'Album deleted' });
+    } else {
+      res.status(500).send('Artist does not match album');
+    }
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error!!');
@@ -511,11 +503,11 @@ router.put(
     const singleFields = {};
     singleFields.title = title;
 
-    // Get album by ID
+    // Get single by ID
     let single = await Single.findById(req.params.singleId);
 
     try {
-      // Update
+      // Update with checks
       if (req.params.artistId === single.artist.toString()) {
         single = await Single.findOneAndUpdate(
           { _id: req.params.singleId },
@@ -532,5 +524,26 @@ router.put(
     }
   }
 );
+
+// @route   DELETE api/admin/artist/:artistId/single/:singleId
+// @desc    DELETE single
+// @access  Private
+router.delete('/artist/:artistId/single/:singleId', auth, async (req, res) => {
+  // Get single by ID
+  let single = await Single.findById(req.params.singleId);
+
+  try {
+    // Delete with checks
+    if (req.params.artistId === single.artist.toString()) {
+      await Single.findOneAndRemove({ _id: req.params.singleId });
+      res.json({ msg: 'Single deleted' });
+    } else {
+      res.status(500).send('Artist does not match single');
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 module.exports = router;
