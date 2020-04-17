@@ -156,6 +156,7 @@ router.post(
     auth,
     [
       check('name', 'Artist name is required').not().isEmpty(),
+      check('img', 'Image is required').not().isEmpty(),
       check('bio', 'Artist bio is required').not().isEmpty(),
     ],
   ],
@@ -167,6 +168,7 @@ router.post(
 
     const {
       name,
+      img,
       bio,
       website,
       company,
@@ -180,6 +182,7 @@ router.post(
     const artistFields = {};
 
     artistFields.name = name;
+    artistFields.img = img;
     artistFields.bio = bio;
     if (website) artistFields.website = website;
     if (company) artistFields.company = company;
@@ -215,6 +218,7 @@ router.put(
     auth,
     [
       check('name', 'Artist name is required').not().isEmpty(),
+      check('img', 'Image is required').not().isEmpty(),
       check('bio', 'Artist bio is required').not().isEmpty(),
     ],
   ],
@@ -226,6 +230,7 @@ router.put(
 
     const {
       name,
+      img,
       bio,
       website,
       company,
@@ -239,6 +244,7 @@ router.put(
     const artistFields = {};
 
     artistFields.name = name;
+    artistFields.img = img;
     artistFields.bio = bio;
     if (website) artistFields.website = website;
     if (company) artistFields.company = company;
@@ -298,7 +304,13 @@ router.delete('/artist/:id', auth, async (req, res) => {
 // @access  Private
 router.post(
   '/artist/:artistId/album',
-  [auth, [check('title', 'Album title is required').not().isEmpty()]],
+  [
+    auth,
+    [
+      check('title', 'Album title is required').not().isEmpty(),
+      check('img', 'Image is required').not().isEmpty(),
+    ],
+  ],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -312,10 +324,11 @@ router.post(
       return res.status(404).send('Artist not found');
     }
 
-    const { title, songs } = req.body;
+    const { title, img, songs } = req.body;
 
     const albumFields = {};
     albumFields.artist = artist;
+    albumFields.img = img;
     albumFields.title = title;
 
     // Build song array
@@ -416,7 +429,7 @@ router.post(
   [
     auth,
     [
-      check('name', 'Genre name is required').not().isEmpty(),
+      check('genre', 'Genre name is required').not().isEmpty(),
       check('img', 'Image is required').not().isEmpty(),
     ],
   ],
@@ -426,11 +439,11 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, img } = req.body;
+    const { genre, img } = req.body;
 
     const genreFields = {};
 
-    genreFields.name = name;
+    genreFields.genre = genre;
     genreFields.img = img;
 
     try {

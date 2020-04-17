@@ -3,45 +3,49 @@ const mongoose = require('mongoose');
 const ArtistSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
+  },
+  img: {
+    type: String,
+    required: true,
   },
   bio: {
     type: String,
-    required: true
+    required: true,
   },
   albums: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'album'
-    }
+      ref: 'album',
+    },
   ],
   singles: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'single'
+    ref: 'single',
   },
   website: {
-    type: String
+    type: String,
   },
   company: {
-    type: String
+    type: String,
   },
   social: {
     youtube: {
-      type: String
+      type: String,
     },
     twitter: {
-      type: String
+      type: String,
     },
     facebook: {
-      type: String
+      type: String,
     },
     instagram: {
-      type: String
+      type: String,
     },
     soundcloud: {
-      type: String
-    }
-  }
+      type: String,
+    },
+  },
 });
 
 module.exports = Artist = mongoose.model('artist', ArtistSchema);
