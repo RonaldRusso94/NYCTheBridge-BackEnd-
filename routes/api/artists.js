@@ -3,8 +3,8 @@ const router = express.Router();
 
 const Artist = require('../../models/Artist');
 
-// @route   GET api/artist
-// @desc    Get all artist
+// @route   GET api/artists
+// @desc    Get all artists
 // @access  Public
 router.get('/', async (req, res) => {
   try {
@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// @route   GET api/artist/:artistId
+// @route   GET api/artists/:artistId
 // @desc    Get specific artist
 // @access  Public
 router.get('/:artistId', async (req, res) => {

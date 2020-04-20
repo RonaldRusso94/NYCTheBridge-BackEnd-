@@ -34,23 +34,4 @@ router.get('/:singleId', async (req, res) => {
   }
 });
 
-// MOVE TO AUTH ROUTE AND ADD AUTH
-// @route   POST api/singles/
-// @desc    Creates a new single
-// @access  Private
-router.post('/', (req, res) => {
-  const { artist, title, songs } = req.body;
-  try {
-    const single = new Single({
-      artist,
-      title,
-      songs,
-    });
-    single.save().then((s) => res.json(s));
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-});
-
 module.exports = router;
