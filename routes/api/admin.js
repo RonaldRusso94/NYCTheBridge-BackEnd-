@@ -309,6 +309,7 @@ router.post(
     [
       check('title', 'Album title is required').not().isEmpty(),
       check('img', 'Image is required').not().isEmpty(),
+      check('genres', 'Genre is required').not().isEmpty(),
     ],
   ],
   async (req, res) => {
@@ -324,7 +325,7 @@ router.post(
       return res.status(404).send('Artist not found');
     }
 
-    const { title, img, songs } = req.body;
+    const { title, img, songs, genres } = req.body;
 
     const albumFields = {};
     albumFields.artist = artist;
@@ -337,6 +338,13 @@ router.post(
       songs.forEach((song) =>
         albumFields.songs.push({ songtitle: song.songtitle })
       );
+    }
+
+    albumFields.genres = [];
+    if (genres) {
+      genres.forEach((genre) => {
+        albumFields.genres.push({ _id: genre._id });
+      });
     }
 
     try {
@@ -358,7 +366,14 @@ router.post(
 // @access  Private
 router.put(
   '/artist/:artistId/album/:albumId',
-  [auth, [check('title', 'Album title is required').not().isEmpty()]],
+  [
+    auth,
+    [
+      check('title', 'Album title is required').not().isEmpty(),
+      check('img', 'Image is required').not().isEmpty(),
+      check('genres', 'Genre is required').not().isEmpty(),
+    ],
+  ],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -368,9 +383,11 @@ router.put(
     // Get album by ID
     let album = await Album.findById(req.params.albumId);
 
-    const { title, songs } = req.body;
+    const { title, img, songs, genres } = req.body;
 
     const albumFields = {};
+    albumFields.artist = artist;
+    albumFields.img = img;
     albumFields.title = title;
 
     // Build song array
@@ -379,6 +396,13 @@ router.put(
       songs.forEach((song) =>
         albumFields.songs.push({ songtitle: song.songtitle })
       );
+    }
+
+    albumFields.genres = [];
+    if (genres) {
+      genres.forEach((genre) => {
+        albumFields.genres.push({ _id: genre._id });
+      });
     }
 
     try {
