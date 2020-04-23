@@ -325,7 +325,7 @@ router.post(
       return res.status(404).send('Artist not found');
     }
 
-    const { title, img, songs, genres } = req.body;
+    const { title, img, songs, genres, features } = req.body;
 
     const albumFields = {};
     albumFields.artist = artist;
@@ -340,11 +340,20 @@ router.post(
       );
     }
 
+    // Build genre array
     albumFields.genres = [];
     if (genres) {
       genres.forEach((genre) => {
         albumFields.genres.push({ _id: genre._id });
       });
+    }
+
+    // Build feature array
+    albumFields.features = [];
+    if (features) {
+      features.forEach((feature) =>
+        albumFields.features.push({ _id: feature._id })
+      );
     }
 
     try {
@@ -383,7 +392,7 @@ router.put(
     // Get album by ID
     let album = await Album.findById(req.params.albumId);
 
-    const { title, img, songs, genres } = req.body;
+    const { title, img, songs, genres, features } = req.body;
 
     const albumFields = {};
     albumFields.artist = artist;
@@ -398,11 +407,20 @@ router.put(
       );
     }
 
+    // Build genres array
     albumFields.genres = [];
     if (genres) {
       genres.forEach((genre) => {
         albumFields.genres.push({ _id: genre._id });
       });
+    }
+
+    // Build feature array
+    albumFields.features = [];
+    if (features) {
+      features.forEach((feature) =>
+        albumFields.features.push({ _id: feature._id })
+      );
     }
 
     try {
@@ -494,6 +512,8 @@ router.post(
     [
       check('title', 'Single title is required').not().isEmpty(),
       check('img', 'Image is required').not().isEmpty(),
+      check('genres', 'Genre title is required').not().isEmpty(),
+      check('video', 'Video is not defined').not().isEmpty(),
     ],
   ],
   async (req, res) => {
@@ -509,12 +529,29 @@ router.post(
       return res.status(404).send('Artist not found');
     }
 
-    const { title, img } = req.body;
+    const { title, img, genres, video, features } = req.body;
 
     const singleFields = {};
     singleFields.artist = artist;
     singleFields.title = title;
     singleFields.img = img;
+    singleFields.video = video;
+
+    // Build genre field
+    singleFields.genres = [];
+    if (genres) {
+      genres.forEach((genre) => {
+        singleFields.genres.push({ _id: genre._id });
+      });
+    }
+
+    // Build feature array
+    singleFields.features = [];
+    if (features) {
+      features.forEach((feature) =>
+        singleFields.features.push({ _id: feature._id })
+      );
+    }
 
     try {
       // Create
@@ -535,17 +572,43 @@ router.post(
 // @access  Private
 router.put(
   '/artist/:artistId/single/:singleId',
-  [auth, [check('title', 'Single title is required').not().isEmpty()]],
+  [
+    auth,
+    [
+      check('title', 'Single title is required').not().isEmpty(),
+      check('img', 'Image is required').not().isEmpty(),
+      check('genres', 'Genre title is required').not().isEmpty(),
+      check('video', 'Video is not defined').not().isEmpty(),
+    ],
+  ],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { title } = req.body;
+    const { title, img, genres, video, features } = req.body;
 
     const singleFields = {};
     singleFields.title = title;
+    singleFields.video = video;
+    singleFields.img = img;
+
+    // Build genre field
+    singleFields.genres = [];
+    if (genres) {
+      genres.forEach((genre) => {
+        singleFields.genres.push({ _id: genre._id });
+      });
+    }
+
+    // Build feature array
+    singleFields.features = [];
+    if (features) {
+      features.forEach((feature) =>
+        singleFields.features.push({ _id: feature._id })
+      );
+    }
 
     // Get single by ID
     let single = await Single.findById(req.params.singleId);

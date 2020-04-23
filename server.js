@@ -17,7 +17,6 @@ app.get('/', (req, res) => res.send('API Running'));
 app.use('/api/admin', require('./routes/api/admin'));
 app.use('/api/artists', require('./routes/api/artists'));
 app.use('/api/albums', require('./routes/api/albums'));
-app.use('/api/songs', require('./routes/api/songs'));
 app.use('/api/singles', require('./routes/api/singles'));
 app.use('/api/genres', require('./routes/api/genres'));
 // app.use('/api/auth', require('./routes/api/auth'));

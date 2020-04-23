@@ -21,7 +21,18 @@ const AlbumSchema = new mongoose.Schema({
       },
     },
   ],
-  genres: [{ type: mongoose.Schema.Types.ObjectId, ref: 'genre' }],
+  features: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'artist',
+    },
+  ],
+  genres: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'genre',
+    },
+  ],
   date: {
     type: Date,
   },
