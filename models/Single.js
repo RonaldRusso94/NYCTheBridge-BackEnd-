@@ -13,6 +13,10 @@ const SingleSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  url: {
+    type: String,
+    required: true,
+  },
   genres: [
     {
       type: mongoose.Schema.Types.ObjectId,

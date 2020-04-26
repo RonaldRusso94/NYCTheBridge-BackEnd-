@@ -13,6 +13,10 @@ const AlbumSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  url: {
+    type: String,
+    required: true,
+  },
   songs: [
     {
       songtitle: {
@@ -35,6 +39,7 @@ const AlbumSchema = new mongoose.Schema({
   ],
   date: {
     type: Date,
+    default: new Date(),
   },
 });
 

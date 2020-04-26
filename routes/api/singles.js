@@ -25,8 +25,11 @@ router.get('/:singleId', async (req, res) => {
   try {
     const { singleId } = req.params;
     const singles = await Single.findById(singleId)
-      .populate('songs')
-      .populate('artist');
+      .populate('artist')
+      .populate({
+        path: 'features',
+        populate: { path: 'artists' },
+      });
     res.json(singles);
   } catch (err) {
     console.error(err.message);

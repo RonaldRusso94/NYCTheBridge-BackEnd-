@@ -309,6 +309,7 @@ router.post(
     [
       check('title', 'Album title is required').not().isEmpty(),
       check('img', 'Image is required').not().isEmpty(),
+      check('url', 'URL is required').not().isEmpty(),
       check('genres', 'Genre is required').not().isEmpty(),
     ],
   ],
@@ -325,12 +326,13 @@ router.post(
       return res.status(404).send('Artist not found');
     }
 
-    const { title, img, songs, genres, features } = req.body;
+    const { title, img, songs, genres, features, url } = req.body;
 
     const albumFields = {};
     albumFields.artist = artist;
     albumFields.img = img;
     albumFields.title = title;
+    albumFields.url = url;
 
     // Build song array
     albumFields.songs = [];
@@ -380,6 +382,7 @@ router.put(
     [
       check('title', 'Album title is required').not().isEmpty(),
       check('img', 'Image is required').not().isEmpty(),
+      check('url', 'URL is required').not().isEmpty(),
       check('genres', 'Genre is required').not().isEmpty(),
     ],
   ],
@@ -392,12 +395,13 @@ router.put(
     // Get album by ID
     let album = await Album.findById(req.params.albumId);
 
-    const { title, img, songs, genres, features } = req.body;
+    const { title, img, songs, genres, features, url } = req.body;
 
     const albumFields = {};
     albumFields.artist = artist;
     albumFields.img = img;
     albumFields.title = title;
+    albumFields.url = url;
 
     // Build song array
     albumFields.songs = [];
@@ -512,6 +516,7 @@ router.post(
     [
       check('title', 'Single title is required').not().isEmpty(),
       check('img', 'Image is required').not().isEmpty(),
+      check('url', 'URL is required').not().isEmpty(),
       check('genres', 'Genre title is required').not().isEmpty(),
       check('video', 'Video is not defined').not().isEmpty(),
     ],
@@ -529,12 +534,13 @@ router.post(
       return res.status(404).send('Artist not found');
     }
 
-    const { title, img, genres, video, features } = req.body;
+    const { title, img, genres, video, features, url } = req.body;
 
     const singleFields = {};
     singleFields.artist = artist;
     singleFields.title = title;
     singleFields.img = img;
+    singleFields.url = url;
     singleFields.video = video;
 
     // Build genre field
@@ -577,6 +583,7 @@ router.put(
     [
       check('title', 'Single title is required').not().isEmpty(),
       check('img', 'Image is required').not().isEmpty(),
+      check('url', 'URL is required').not().isEmpty(),
       check('genres', 'Genre title is required').not().isEmpty(),
       check('video', 'Video is not defined').not().isEmpty(),
     ],
@@ -587,12 +594,13 @@ router.put(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { title, img, genres, video, features } = req.body;
+    const { title, img, genres, video, features, url } = req.body;
 
     const singleFields = {};
     singleFields.title = title;
     singleFields.video = video;
     singleFields.img = img;
+    singleFields.url = url;
 
     // Build genre field
     singleFields.genres = [];

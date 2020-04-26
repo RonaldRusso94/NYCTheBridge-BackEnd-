@@ -22,7 +22,12 @@ router.get('/', async (req, res) => {
 router.get('/:albumId', async (req, res) => {
   try {
     const { albumId } = req.params;
-    const album = await Album.findById(albumId);
+    const album = await Album.findById(albumId)
+      .populate('artist')
+      .populate({
+        path: 'features',
+        populate: { path: 'artists' },
+      });
     res.json(album);
   } catch (err) {
     console.error(err.message);
