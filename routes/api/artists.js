@@ -21,21 +21,12 @@ router.get('/', async (req, res) => {
 // @access  Public
 router.get('/search/:text', async (req, res) => {
   try {
-    const text = req.params.text; //this is the way to access the text params
-
-    let text2 = [];
-    for (let i = 0; i < text.length; i++) {
-      if (text[i] !== '+') text2.push(text[i]);
-      else text2.push(' ');
-    }
-    text2 = text2.join('');
-
-    // const filtered = await Artist.find({ name: text2 });
+    const text = req.params.text;
 
     const filtered = await Artist.find({
       name: { $regex: text, $options: 'i' },
     });
-    console.log('text', text2);
+
     res.json(filtered);
   } catch (err) {
     console.error(err.message);

@@ -4,7 +4,7 @@ const router = express.Router();
 const Album = require('../../models/Album');
 
 // @route   GET api/albums
-// @desc    Get all albums
+// @desc    Get All Albums
 // @access  Public
 router.get('/', async (req, res) => {
   try {
@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 });
 
 // @route   GET api/albums/:albumId
-// @desc    Gets a specific album
+// @desc    Get a specific album
 // @access  Public
 router.get('/:albumId', async (req, res) => {
   try {
@@ -29,6 +29,24 @@ router.get('/:albumId', async (req, res) => {
         populate: { path: 'artists' },
       });
     res.json(album);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// @route   GET api/albums/search/:text
+// @desc    Get Album By Search
+// @access  Public
+router.get('/search/:text', async (req, res) => {
+  try {
+    const text = req.params.text;
+
+    const filtered = await Album.find({
+      title: { $regex: text, $options: 'i' },
+    });
+
+    res.json(filtered);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
