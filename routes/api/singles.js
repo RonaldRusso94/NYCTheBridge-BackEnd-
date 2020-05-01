@@ -8,7 +8,6 @@ const Single = require('../../models/Single');
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    // const albums = await Album.find();
     const singles = await Single.find();
     res.json(singles);
   } catch (err) {
@@ -20,7 +19,6 @@ router.get('/', async (req, res) => {
 // @route   GET api/singles/:singleId
 // @desc    Get a specific single
 // @access  Public
-
 router.get('/:singleId', async (req, res) => {
   try {
     const { singleId } = req.params;
@@ -48,11 +46,22 @@ router.get('/search/:text', async (req, res) => {
       title: { $regex: text, $options: 'i' },
     });
 
-    // const filtered = await Artist.find({
-    //   name: { $regex: text, $options: 'i' },
-    // });
-
     res.json(filtered);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// @route   GET api/browse/singles
+// @desc    Get Singles By Artist
+// @access  Public
+router.get('/artist/:artistId', async (req, res) => {
+  try {
+    const artistId = req.params.artistId;
+
+    const singles = await Single.find({ artist: artistId });
+    res.json(singles);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');

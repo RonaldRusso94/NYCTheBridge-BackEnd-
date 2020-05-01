@@ -53,4 +53,20 @@ router.get('/search/:text', async (req, res) => {
   }
 });
 
+// @route   GET api/albums
+// @desc    Get Albums By Artist
+// @access  Public
+router.get('/artist/:artistId', async (req, res) => {
+  try {
+    const artistId = req.params.artistId;
+
+    const albums = await Album.find({ artist: artistId });
+
+    res.json(albums);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error!!');
+  }
+});
+
 module.exports = router;
