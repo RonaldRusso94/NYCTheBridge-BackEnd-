@@ -68,7 +68,7 @@ router.get('/artist/:artistId', async (req, res) => {
   }
 });
 
-// @route   GET api/browse/singles
+// @route   GET api/singles/features/featuredId
 // @desc    Get Singles By Featured
 // @access  Public
 router.get('/features/:featuredId', async (req, res) => {

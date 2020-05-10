@@ -69,4 +69,19 @@ router.get('/artist/:artistId', async (req, res) => {
   }
 });
 
+// @route   GET api/albums/features/featuredId
+// @desc    Get Albums By Featured
+// @access  Public
+router.get('/features/:featuredId', async (req, res) => {
+  try {
+    const featuredId = req.params.featuredId;
+
+    const albums = await Album.find({ features: featuredId });
+    res.json(albums);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 module.exports = router;
