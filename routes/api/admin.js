@@ -10,6 +10,7 @@ const Admin = require('../../models/Admin');
 const Artist = require('../../models/Artist');
 const Album = require('../../models/Album');
 const Single = require('../../models/Single');
+const Merch = require('../../models/Merch');
 
 // @route   POST api/admin
 // @desc    Authenticate admin & get token
@@ -660,5 +661,51 @@ router.delete('/artist/:artistId/single/:singleId', auth, async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
+
+// @route   POST api/admin/merch/:artistId
+// @desc    Create Artist Merch
+// @access  Private
+router.post(
+  '/merch/:artistId',
+  [
+    auth,
+    [
+      check('link', 'Link is required').not().isEmpty(),
+      check('img', 'Image is required').not().isEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    // Check if artist exist
+    const artist = await Artist.findById(req.params.artistId).select('id');
+
+    if (artist === null) {
+      return res.status(404).send('Artist not found');
+    }
+
+    const { link, img } = req.body;
+
+    const merchFields = {};
+    merchFields.artist = artist;
+    merchFields.link = link;
+    merchFields.img = img;
+
+    try {
+      // Create
+      let merch = new Merch(merchFields);
+
+      await merch.save();
+
+      res.json(merch);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
 
 module.exports = router;
