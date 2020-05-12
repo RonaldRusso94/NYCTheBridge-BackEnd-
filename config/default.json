@@ -1,4 +1,4 @@
 {
-  "mongoURI": "mongodb+srv://Ronald:abcd1234@cluster0-snqjz.mongodb.net/test?retryWrites=true&w=majority",
+  "mongoURI": "mongodb+srv://Ronald:abcd1234@cluster0-snqjz.mongodb.net/NYCTheBridge?retryWrites=true&w=majority",
   "jwtSecret": "mysecrettoken"
 }

@@ -157,7 +157,8 @@ router.post(
     auth,
     [
       check('name', 'Artist name is required').not().isEmpty(),
-      check('img', 'Image is required').not().isEmpty(),
+      check('headerimg', 'Header image is required').not().isEmpty(),
+      check('gallery', 'Header image is required').not().isEmpty(),
       check('bio', 'Artist bio is required').not().isEmpty(),
     ],
   ],
@@ -169,7 +170,7 @@ router.post(
 
     const {
       name,
-      img,
+      headerimg,
       bio,
       website,
       company,
@@ -183,7 +184,7 @@ router.post(
     const artistFields = {};
 
     artistFields.name = name;
-    artistFields.img = img;
+    artistFields.headerimg = headerimg;
     artistFields.bio = bio;
     if (website) artistFields.website = website;
     if (company) artistFields.company = company;
@@ -399,7 +400,6 @@ router.put(
     const { title, img, songs, genres, features, url } = req.body;
 
     const albumFields = {};
-    albumFields.artist = artist;
     albumFields.img = img;
     albumFields.title = title;
     albumFields.url = url;

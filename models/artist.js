@@ -5,23 +5,21 @@ const ArtistSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  img: {
+  headerimg: {
     type: String,
     required: true,
   },
+  gallery: [
+    {
+      img: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
   bio: {
     type: String,
     required: true,
-  },
-  albums: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'album',
-    },
-  ],
-  singles: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'single',
   },
   website: {
     type: String,
