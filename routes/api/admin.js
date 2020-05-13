@@ -156,10 +156,14 @@ router.post(
   [
     auth,
     [
-      check('name', 'Artist name is required').not().isEmpty(),
-      check('headerimg', 'Header image is required').not().isEmpty(),
-      check('gallery', 'Header image is required').not().isEmpty(),
-      check('bio', 'Artist bio is required').not().isEmpty(),
+      check('name', 'Artist name is required').notEmpty(),
+      check('img', 'Image is required').notEmpty(),
+      check('headerimg', 'Header image is required').notEmpty(),
+      check('gallery', 'Gallery images are required').isArray({
+        max: 3,
+        min: 3,
+      }),
+      check('bio', 'Artist bio is required').notEmpty(),
     ],
   ],
   async (req, res) => {
@@ -170,7 +174,9 @@ router.post(
 
     const {
       name,
+      img,
       headerimg,
+      gallery,
       bio,
       website,
       company,
@@ -184,10 +190,15 @@ router.post(
     const artistFields = {};
 
     artistFields.name = name;
+    artistFields.img = img;
     artistFields.headerimg = headerimg;
     artistFields.bio = bio;
     if (website) artistFields.website = website;
     if (company) artistFields.company = company;
+
+    // Build Img Gallery Array
+    artistFields.gallery = [];
+    gallery.forEach((x) => artistFields.gallery.push({ img: x.img }));
 
     // Build social object
     artistFields.social = {};
@@ -219,9 +230,14 @@ router.put(
   [
     auth,
     [
-      check('name', 'Artist name is required').not().isEmpty(),
-      check('img', 'Image is required').not().isEmpty(),
-      check('bio', 'Artist bio is required').not().isEmpty(),
+      check('name', 'Artist name is required').notEmpty(),
+      check('img', 'Image is required').notEmpty(),
+      check('headerimg', 'Header image is required').notEmpty(),
+      check('gallery', 'Gallery images are required').isArray({
+        max: 3,
+        min: 3,
+      }),
+      check('bio', 'Artist bio is required').notEmpty(),
     ],
   ],
   async (req, res) => {
@@ -233,6 +249,8 @@ router.put(
     const {
       name,
       img,
+      headerimg,
+      gallery,
       bio,
       website,
       company,
@@ -247,9 +265,14 @@ router.put(
 
     artistFields.name = name;
     artistFields.img = img;
+    artistFields.headerimg = headerimg;
     artistFields.bio = bio;
     if (website) artistFields.website = website;
     if (company) artistFields.company = company;
+
+    // Build Img Gallery Array
+    artistFields.gallery = [];
+    gallery.forEach((x) => artistFields.gallery.push({ img: x.img }));
 
     // Build social object
     artistFields.social = {};
