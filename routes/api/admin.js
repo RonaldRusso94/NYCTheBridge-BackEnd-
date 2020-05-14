@@ -377,22 +377,60 @@ router.post(
 
     // Build feature array
     albumFields.features = [];
-    if (features) {
-      features.forEach((feature) =>
-        albumFields.features.push({ _id: feature._id })
-      );
-    }
+    let promises = [];
 
-    try {
-      // Create
-      let album = new Album(albumFields);
+    features.forEach((feature) => {
+      const doesArtistExist = Artist.exists({ _id: feature._id });
+      console.log('doesartistexist', doesArtistExist);
 
-      await album.save();
+      promises.push(doesArtistExist);
+    });
 
-      res.json(album);
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Server Error');
+    let status = 200;
+    await Promise.all(promises)
+      .then((results) => {
+        let i = 0;
+        for (const feature of results) {
+          if (feature == false) {
+            console.log('err');
+          }
+          if (feature == true) albumFields.features.push(features[i]._id);
+          else {
+            status = 404;
+          }
+          i++;
+        }
+        console.log('result', results);
+        console.log('albumFields', albumFields.features);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    albumFields.features.map((feature, index) => {
+      for (let i = index + 1; i < albumFields.features.length; i++) {
+        if (feature == albumFields.features[i]) {
+          console.log('duplicates found');
+          status = 500;
+        }
+      }
+    });
+
+    if (status == 500) res.status(500).send('Featured Artist is duplicate');
+    else if (status == 404)
+      res.status(404).send('Featured Artist Does Not Exist');
+    else {
+      try {
+        // Create
+        let album = new Album(albumFields);
+
+        await album.save();
+
+        res.json(album);
+      } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+      }
     }
   }
 );
