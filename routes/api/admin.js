@@ -379,44 +379,45 @@ router.post(
     albumFields.features = [];
     let promises = [];
 
+    // Build Array of promises
     features.forEach((feature) => {
       const doesArtistExist = Artist.exists({ _id: feature._id });
-      console.log('doesartistexist', doesArtistExist);
-
       promises.push(doesArtistExist);
     });
 
     let status = 200;
+
+    features.map((feature, index) => {
+      // Check Feature != album owner
+      if (feature._id == artist._id) {
+        status = 400;
+      }
+      // Make sure features does not have duplicate IDs
+      for (let i = index + 1; i < features.length; i++) {
+        if (feature._id == features[i]._id) {
+          status = 500;
+        }
+      }
+    });
+
     await Promise.all(promises)
       .then((results) => {
         let i = 0;
         for (const feature of results) {
-          if (feature == false) {
-            console.log('err');
-          }
           if (feature == true) albumFields.features.push(features[i]._id);
           else {
             status = 404;
           }
           i++;
         }
-        console.log('result', results);
-        console.log('albumFields', albumFields.features);
       })
       .catch((err) => {
         console.log(err);
       });
 
-    albumFields.features.map((feature, index) => {
-      for (let i = index + 1; i < albumFields.features.length; i++) {
-        if (feature == albumFields.features[i]) {
-          console.log('duplicates found');
-          status = 500;
-        }
-      }
-    });
-
     if (status == 500) res.status(500).send('Featured Artist is duplicate');
+    else if (status == 400)
+      res.status(400).send('Cannot feature owner of album');
     else if (status == 404)
       res.status(404).send('Featured Artist Does Not Exist');
     else {
