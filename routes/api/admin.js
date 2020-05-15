@@ -400,6 +400,7 @@ router.post(
       }
     });
 
+    // Check array of promises
     await Promise.all(promises)
       .then((results) => {
         let i = 0;
@@ -456,6 +457,13 @@ router.put(
       return res.status(400).json({ errors: errors.array() });
     }
 
+    // Check if artist exist
+    const artist = await Artist.findById(req.params.artistId).select('id');
+
+    if (artist === null) {
+      return res.status(404).send('Artist not found');
+    }
+
     // Get album by ID
     let album = await Album.findById(req.params.albumId);
 
@@ -484,27 +492,67 @@ router.put(
 
     // Build feature array
     albumFields.features = [];
-    if (features) {
-      features.forEach((feature) =>
-        albumFields.features.push({ _id: feature._id })
-      );
-    }
+    let promises = [];
 
-    try {
-      // Update
-      if (req.params.artistId === album.artist.toString()) {
-        album = await Album.findOneAndUpdate(
-          { _id: req.params.albumId },
-          { $set: albumFields },
-          { new: true }
-        );
-        res.json(album);
-      } else {
-        res.status(500).send('Album was not created by artist');
+    // Build Array of promises
+    features.forEach((feature) => {
+      const doesArtistExist = Artist.exists({ _id: feature._id });
+      promises.push(doesArtistExist);
+    });
+
+    let status = 200;
+
+    features.map((feature, index) => {
+      // Check Feature != album owner
+      if (feature._id == artist._id) {
+        status = 400;
       }
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Server Error');
+      // Make sure features does not have duplicate IDs
+      for (let i = index + 1; i < features.length; i++) {
+        if (feature._id == features[i]._id) {
+          status = 500;
+        }
+      }
+    });
+
+    // Check array of promises
+    await Promise.all(promises)
+      .then((results) => {
+        let i = 0;
+        for (const feature of results) {
+          if (feature == true) albumFields.features.push(features[i]._id);
+          else {
+            status = 404;
+          }
+          i++;
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    if (status == 500) res.status(500).send('Featured Artist is duplicate');
+    else if (status == 400)
+      res.status(400).send('Cannot feature owner of album');
+    else if (status == 404)
+      res.status(404).send('Featured Artist Does Not Exist');
+    else {
+      try {
+        // Update
+        if (req.params.artistId === album.artist.toString()) {
+          album = await Album.findOneAndUpdate(
+            { _id: req.params.albumId },
+            { $set: albumFields },
+            { new: true }
+          );
+          res.json(album);
+        } else {
+          res.status(500).send('Album was not created by artist');
+        }
+      } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+      }
     }
   }
 );
@@ -616,22 +664,62 @@ router.post(
 
     // Build feature array
     singleFields.features = [];
-    if (features) {
-      features.forEach((feature) =>
-        singleFields.features.push({ _id: feature._id })
-      );
-    }
+    let promises = [];
 
-    try {
-      // Create
-      let single = new Single(singleFields);
+    // Build Array of promises
+    features.forEach((feature) => {
+      const doesArtistExist = Artist.exists({ _id: feature._id });
+      promises.push(doesArtistExist);
+    });
 
-      await single.save();
+    let status = 200;
 
-      res.json(single);
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Server Error');
+    features.map((feature, index) => {
+      // Check Feature != single owner
+      if (feature._id == artist._id) {
+        status = 400;
+      }
+      // Make sure features does not have duplicate IDs
+      for (let i = index + 1; i < features.length; i++) {
+        if (feature._id == features[i]._id) {
+          status = 500;
+        }
+      }
+    });
+
+    // Check array of promises
+    await Promise.all(promises)
+      .then((results) => {
+        let i = 0;
+        for (const feature of results) {
+          if (feature == true) singleFields.features.push(features[i]._id);
+          else {
+            status = 404;
+          }
+          i++;
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    if (status == 500) res.status(500).send('Featured Artist is duplicate');
+    else if (status == 400)
+      res.status(400).send('Cannot feature owner of single');
+    else if (status == 404)
+      res.status(404).send('Featured Artist Does Not Exist');
+    else {
+      try {
+        // Create
+        let single = new Single(singleFields);
+
+        await single.save();
+
+        res.json(single);
+      } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+      }
     }
   }
 );
@@ -657,6 +745,13 @@ router.put(
       return res.status(400).json({ errors: errors.array() });
     }
 
+    // Check if artist exist
+    const artist = await Artist.findById(req.params.artistId).select('id');
+
+    if (artist === null) {
+      return res.status(404).send('Artist not found');
+    }
+
     const { title, img, genres, video, features, url } = req.body;
 
     const singleFields = {};
@@ -673,32 +768,72 @@ router.put(
       });
     }
 
-    // Build feature array
-    singleFields.features = [];
-    if (features) {
-      features.forEach((feature) =>
-        singleFields.features.push({ _id: feature._id })
-      );
-    }
-
     // Get single by ID
     let single = await Single.findById(req.params.singleId);
 
-    try {
-      // Update with checks
-      if (req.params.artistId === single.artist.toString()) {
-        single = await Single.findOneAndUpdate(
-          { _id: req.params.singleId },
-          { $set: singleFields },
-          { new: true }
-        );
-        res.json(single);
-      } else {
-        res.status(404).send('Single was not created by artist');
+    // Build feature array
+    singleFields.features = [];
+    let promises = [];
+
+    // Build Array of promises
+    features.forEach((feature) => {
+      const doesArtistExist = Artist.exists({ _id: feature._id });
+      promises.push(doesArtistExist);
+    });
+
+    let status = 200;
+
+    features.map((feature, index) => {
+      // Check Feature != single owner
+      if (feature._id == artist._id) {
+        status = 400;
       }
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Server Error');
+      // Make sure features does not have duplicate IDs
+      for (let i = index + 1; i < features.length; i++) {
+        if (feature._id == features[i]._id) {
+          status = 500;
+        }
+      }
+    });
+
+    // Check array of promises
+    await Promise.all(promises)
+      .then((results) => {
+        let i = 0;
+        for (const feature of results) {
+          if (feature == true) singleFields.features.push(features[i]._id);
+          else {
+            status = 404;
+          }
+          i++;
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    if (status == 500) res.status(500).send('Featured Artist is duplicate');
+    else if (status == 400)
+      res.status(400).send('Cannot feature owner of single');
+    else if (status == 404)
+      res.status(404).send('Featured Artist Does Not Exist');
+    else {
+      try {
+        // Update with checks
+        if (req.params.artistId === single.artist.toString()) {
+          single = await Single.findOneAndUpdate(
+            { _id: req.params.singleId },
+            { $set: singleFields },
+            { new: true }
+          );
+          res.json(single);
+        } else {
+          res.status(404).send('Single was not created by artist');
+        }
+      } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+      }
     }
   }
 );

@@ -17,6 +17,10 @@ const SingleSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  video: {
+    type: Boolean,
+    required: true,
+  },
   genres: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -29,10 +33,7 @@ const SingleSchema = new mongoose.Schema({
       ref: 'artist',
     },
   ],
-  video: {
-    type: Boolean,
-    required: true,
-  },
+
   date: {
     type: Date,
     default: new Date(),
