@@ -10,11 +10,12 @@ router.get('/:artistId', async (req, res) => {
   try {
     const artistId = req.params.artistId;
 
-    const merch = await Merch.find({ artist: artistId });
-    if (merch.length > 0) {
+    try {
+      const merch = await Merch.find({ artist: artistId });
       res.json(merch);
-    } else {
-      res.status(404).send('Artist not found');
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
     }
   } catch (err) {
     console.error(err.message);
