@@ -3,7 +3,7 @@ const router = express.Router();
 
 const Single = require('../../models/Single');
 
-// @route   GET api/browse/singles
+// @route   GET api/singles
 // @desc    Get all singles
 // @access  Public
 router.get('/', async (req, res) => {
@@ -16,12 +16,26 @@ router.get('/', async (req, res) => {
   }
 });
 
-// @route   GET api/browse/singles/videos
+// @route   GET api/singles/videos
 // @desc    Get Singles With Videos
 // @access  Public
 router.get('/videos', async (req, res) => {
   try {
     const singles = await Single.find({ video: true });
+    res.json(singles);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// @route   GET api/singles/genre/genreId
+// @desc    Get Singles By Genre
+// @access  Public
+router.get('/genre/:genreId', async (req, res) => {
+  try {
+    const { genreId } = req.params;
+    const singles = await Single.find({ genres: { _id: genreId } });
     res.json(singles);
   } catch (err) {
     console.error(err.message);
@@ -66,7 +80,7 @@ router.get('/search/:text', async (req, res) => {
   }
 });
 
-// @route   GET api/browse/singles
+// @route   GET api/singles/artist/artistId
 // @desc    Get Singles By Artist
 // @access  Public
 router.get('/artist/:artistId', async (req, res) => {

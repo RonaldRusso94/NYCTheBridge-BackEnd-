@@ -16,6 +16,20 @@ router.get('/', async (req, res) => {
   }
 });
 
+// @route   GET api/albums/genre/genreId
+// @desc    Get Album By Genre
+// @access  Public
+router.get('/genre/:genreId', async (req, res) => {
+  try {
+    const { genreId } = req.params;
+    const albums = await Album.find({ genres: { _id: genreId } });
+    res.json(albums);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 // @route   GET api/albums/:albumId
 // @desc    Get a specific album
 // @access  Public
