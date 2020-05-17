@@ -16,6 +16,19 @@ router.get('/', async (req, res) => {
   }
 });
 
+// @route   GET api/browse/singles/videos
+// @desc    Get Singles With Videos
+// @access  Public
+router.get('/videos', async (req, res) => {
+  try {
+    const singles = await Single.find({ video: true });
+    res.json(singles);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 // @route   GET api/singles/:singleId
 // @desc    Get a specific single
 // @access  Public

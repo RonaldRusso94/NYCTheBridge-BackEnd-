@@ -432,7 +432,7 @@ router.post(
         // Create
         let album = new Album(albumFields);
 
-        // await album.save();
+        await album.save();
 
         res.json(album);
       } catch (err) {
