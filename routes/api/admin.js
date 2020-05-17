@@ -11,6 +11,7 @@ const Artist = require('../../models/Artist');
 const Album = require('../../models/Album');
 const Single = require('../../models/Single');
 const Merch = require('../../models/Merch');
+const Genre = require('../../models/Genre');
 
 // @route   POST api/admin
 // @desc    Authenticate admin & get token
@@ -369,23 +370,27 @@ router.post(
 
     // Build genre array
     albumFields.genres = [];
+    let GenreError = false;
     if (genres) {
-      genres.forEach((genre) => {
-        albumFields.genres.push({ _id: genre._id });
+      await genres.forEach((genre) => {
+        Genre.countDocuments({ _id: genre._id }, (err, count) => {
+          return count > 0
+            ? albumFields.genres.push({ _id: genre._id })
+            : (GenreError = true);
+        });
       });
     }
 
     // Build feature array
     albumFields.features = [];
     let promises = [];
+    let status = 200;
 
     // Build Array of promises
     features.forEach((feature) => {
       const doesArtistExist = Artist.exists({ _id: feature._id });
       promises.push(doesArtistExist);
     });
-
-    let status = 200;
 
     features.map((feature, index) => {
       // Check Feature != album owner
@@ -421,12 +426,13 @@ router.post(
       res.status(400).send('Cannot feature owner of album');
     else if (status == 404)
       res.status(404).send('Featured Artist Does Not Exist');
+    else if (GenreError == true) res.status(400).send('Genre Does Not Exist');
     else {
       try {
         // Create
         let album = new Album(albumFields);
 
-        await album.save();
+        // await album.save();
 
         res.json(album);
       } catch (err) {
@@ -482,11 +488,16 @@ router.put(
       );
     }
 
-    // Build genres array
+    // Build genre array
     albumFields.genres = [];
+    let GenreError = false;
     if (genres) {
-      genres.forEach((genre) => {
-        albumFields.genres.push({ _id: genre._id });
+      await genres.forEach((genre) => {
+        Genre.countDocuments({ _id: genre._id }, (err, count) => {
+          return count > 0
+            ? albumFields.genres.push({ _id: genre._id })
+            : (GenreError = true);
+        });
       });
     }
 
@@ -536,6 +547,7 @@ router.put(
       res.status(400).send('Cannot feature owner of album');
     else if (status == 404)
       res.status(404).send('Featured Artist Does Not Exist');
+    else if (GenreError == true) res.status(400).send('Genre Does Not Exist');
     else {
       try {
         // Update
@@ -654,11 +666,16 @@ router.post(
     singleFields.url = url;
     singleFields.video = video;
 
-    // Build genre field
+    // Build genre array
     singleFields.genres = [];
+    let GenreError = false;
     if (genres) {
-      genres.forEach((genre) => {
-        singleFields.genres.push({ _id: genre._id });
+      await genres.forEach((genre) => {
+        Genre.countDocuments({ _id: genre._id }, (err, count) => {
+          return count > 0
+            ? singleFields.genres.push({ _id: genre._id })
+            : (GenreError = true);
+        });
       });
     }
 
@@ -708,6 +725,7 @@ router.post(
       res.status(400).send('Cannot feature owner of single');
     else if (status == 404)
       res.status(404).send('Featured Artist Does Not Exist');
+    else if (GenreError == true) res.status(400).send('Genre Does Not Exist');
     else {
       try {
         // Create
@@ -760,11 +778,16 @@ router.put(
     singleFields.img = img;
     singleFields.url = url;
 
-    // Build genre field
+    // Build genre array
     singleFields.genres = [];
+    let GenreError = false;
     if (genres) {
-      genres.forEach((genre) => {
-        singleFields.genres.push({ _id: genre._id });
+      await genres.forEach((genre) => {
+        Genre.countDocuments({ _id: genre._id }, (err, count) => {
+          return count > 0
+            ? singleFields.genres.push({ _id: genre._id })
+            : (GenreError = true);
+        });
       });
     }
 
@@ -817,6 +840,7 @@ router.put(
       res.status(400).send('Cannot feature owner of single');
     else if (status == 404)
       res.status(404).send('Featured Artist Does Not Exist');
+    else if (GenreError == true) res.status(400).send('Genre Does Not Exist');
     else {
       try {
         // Update with checks
