@@ -371,75 +371,97 @@ router.post(
     // Build genre array
     albumFields.genres = [];
     let GenreError = false;
-    if (genres) {
-      await genres.forEach((genre) => {
-        Genre.countDocuments({ _id: genre._id }, (err, count) => {
-          return count > 0
-            ? albumFields.genres.push({ _id: genre._id })
-            : (GenreError = true);
-        });
+    genres.forEach((genre) => {
+      Genre.countDocuments({ _id: genre._id }, (err, count) => {
+        return count > 0
+          ? albumFields.genres.push({ _id: genre._id })
+          : (GenreError = true);
       });
-    }
+    });
 
     // Build feature array
-    albumFields.features = [];
-    let promises = [];
-    let status = 200;
 
-    // Build Array of promises
-    features.forEach((feature) => {
-      const doesArtistExist = Artist.exists({ _id: feature._id });
-      promises.push(doesArtistExist);
-    });
+    // let promises = [];
+    // let status = 200;
 
-    features.map((feature, index) => {
-      // Check Feature != album owner
-      if (feature._id == artist._id) {
-        status = 400;
-      }
-      // Make sure features does not have duplicate IDs
-      for (let i = index + 1; i < features.length; i++) {
-        if (feature._id == features[i]._id) {
-          status = 500;
+    // // Build Array of promises
+    // if (features) {
+    //   features.forEach((feature) => {
+    //     const doesArtistExist = Artist.exists({ _id: feature._id });
+    //     promises.push(doesArtistExist);
+    //   });
+
+    //   features.map((feature, index) => {
+    //     // Check Feature != album owner
+    //     if (feature._id == artist._id) {
+    //       status = 400;
+    //     }
+    //     // Make sure features does not have duplicate IDs
+    //     for (let i = index + 1; i < features.length; i++) {
+    //       if (feature._id == features[i]._id) {
+    //         status = 500;
+    //       }
+    //     }
+    //   });
+
+    //   // Check array of promises
+    //   await Promise.all(promises)
+    //     .then((results) => {
+    //       let i = 0;
+    //       for (const feature of results) {
+    //         if (feature == true) albumFields.features.push(features[i]._id);
+    //         else {
+    //           status = 404;
+    //         }
+    //         i++;
+    //       }
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // }
+
+    // if (status == 500) res.status(500).send('Featured Artist is duplicate');
+    // else if (status == 400)
+    //   res.status(400).send('Cannot feature owner of album');
+    // else if (status == 404)
+    //   res.status(404).send('Featured Artist Does Not Exist');
+    // else if (GenreError == true) res.status(400).send('Genre Does Not Exist');
+    // else {
+    try {
+      //Build Album Features Array
+      albumFields.features = [];
+      for (let i = 0; i < features.length; i++) {
+        // Check if album owner appears on features
+        if (artist._id.toString() === features[i]._id) {
+          throw { status: 400, message: 'Can Not Feature Owner Of Album' };
+        }
+        // Check if featured artist exist
+        const artists = await Artist.find({ _id: features[i]._id });
+        if (artists.length > 0) {
+          // Push features into albumFields.features array
+          albumFields.features.push({ _id: features[i]._id });
+        } else {
+          throw { status: 404, message: 'Featured Artist Does Not Exist' };
         }
       }
-    });
 
-    // Check array of promises
-    await Promise.all(promises)
-      .then((results) => {
-        let i = 0;
-        for (const feature of results) {
-          if (feature == true) albumFields.features.push(features[i]._id);
-          else {
-            status = 404;
-          }
-          i++;
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      // Create
+      let album = new Album(albumFields);
 
-    if (status == 500) res.status(500).send('Featured Artist is duplicate');
-    else if (status == 400)
-      res.status(400).send('Cannot feature owner of album');
-    else if (status == 404)
-      res.status(404).send('Featured Artist Does Not Exist');
-    else if (GenreError == true) res.status(400).send('Genre Does Not Exist');
-    else {
-      try {
-        // Create
-        let album = new Album(albumFields);
+      // await album.save();
 
-        await album.save();
-
-        res.json(album);
-      } catch (err) {
+      res.json(album);
+    } catch (err) {
+      if (err.status) {
+        console.error(err.message);
+        res.status(err.status).send(err.message);
+      } else {
         console.error(err.message);
         res.status(500).send('Server Error');
       }
     }
+    // }
   }
 );
 
