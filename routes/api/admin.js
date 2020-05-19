@@ -522,11 +522,12 @@ router.put(
         }
       }
 
-      // Create
-      let album = new Album(albumFields);
-
-      await album.save();
-
+      // Update
+      album = await Album.findOneAndUpdate(
+        { _id: req.params.albumId },
+        { $set: albumFields },
+        { new: true }
+      );
       res.json(album);
     } catch (err) {
       if (err.status) {
@@ -781,10 +782,12 @@ router.put(
         }
       }
 
-      // Create
-      let single = new Single(singleFields);
-
-      await single.save();
+      // Update
+      single = await Single.findOneAndUpdate(
+        { _id: req.params.singleId },
+        { $set: singleFields },
+        { new: true }
+      );
 
       res.json(single);
     } catch (err) {
