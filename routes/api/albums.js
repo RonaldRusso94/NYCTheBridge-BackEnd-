@@ -8,7 +8,10 @@ const Album = require('../../models/Album');
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const albums = await Album.find();
+    const albums = await Album.find().populate({
+      path: 'artist',
+      select: 'name',
+    });
     res.json(albums);
   } catch (err) {
     console.error(err.message);

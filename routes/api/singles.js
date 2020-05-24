@@ -8,7 +8,10 @@ const Single = require('../../models/Single');
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const singles = await Single.find();
+    const singles = await Single.find().populate({
+      path: 'artist',
+      select: 'name',
+    });
     res.json(singles);
   } catch (err) {
     console.error(err.message);
