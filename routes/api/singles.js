@@ -24,7 +24,10 @@ router.get('/', async (req, res) => {
 // @access  Public
 router.get('/videos', async (req, res) => {
   try {
-    const singles = await Single.find({ video: true });
+    const singles = await Single.find({ video: true }).populate({
+      path: 'artist',
+      select: 'name',
+    });
     res.json(singles);
   } catch (err) {
     console.error(err.message);
@@ -38,7 +41,10 @@ router.get('/videos', async (req, res) => {
 router.get('/genre/:genreId', async (req, res) => {
   try {
     const { genreId } = req.params;
-    const singles = await Single.find({ genres: { _id: genreId } });
+    const singles = await Single.find({ genres: { _id: genreId } }).populate({
+      path: 'artist',
+      select: 'name',
+    });
     res.json(singles);
   } catch (err) {
     console.error(err.message);
@@ -74,6 +80,9 @@ router.get('/search/:text', async (req, res) => {
 
     const filtered = await Single.find({
       title: { $regex: text, $options: 'i' },
+    }).populate({
+      path: 'artist',
+      select: 'name',
     });
 
     res.json(filtered);

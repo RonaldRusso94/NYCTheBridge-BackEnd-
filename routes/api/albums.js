@@ -25,7 +25,10 @@ router.get('/', async (req, res) => {
 router.get('/genre/:genreId', async (req, res) => {
   try {
     const { genreId } = req.params;
-    const albums = await Album.find({ genres: { _id: genreId } });
+    const albums = await Album.find({ genres: { _id: genreId } }).populate({
+      path: 'artist',
+      select: 'name',
+    });
     res.json(albums);
   } catch (err) {
     console.error(err.message);
@@ -61,6 +64,9 @@ router.get('/search/:text', async (req, res) => {
 
     const filtered = await Album.find({
       title: { $regex: text, $options: 'i' },
+    }).populate({
+      path: 'artist',
+      select: 'name',
     });
 
     res.json(filtered);
